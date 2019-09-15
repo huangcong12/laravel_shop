@@ -6,6 +6,7 @@ use App\Product;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
 
 class ProductsController extends AdminController
@@ -18,13 +19,43 @@ class ProductsController extends AdminController
     protected $title = 'App\Product';
 
     /**
+     * 商品列表
      *
-     * ProductsController constructor.
+     * @param Content $content
+     * @return Content
      */
-    public function __construct()
+    public function index(Content $content)
     {
-        $this->title = '商品管理';
+        $this->title = '商品列表';
+        return parent::index($content);
     }
+
+    /**
+     * 新增商品
+     *
+     * @param Content $content
+     * @return Content
+     */
+    public function create(Content $content)
+    {
+        $this->title = '新增商品';
+        return parent::create($content);
+    }
+
+    /**
+     * 编辑商品
+     *
+     * @param mixed $id
+     * @param Content $content
+     * @return Content|void
+     */
+    public function edit($id, Content $content)
+    {
+        $this->title = '编辑商品';
+        return parent::edit($id, $content);
+    }
+
+
 
     /**
      * Make a grid builder.
@@ -83,14 +114,28 @@ class ProductsController extends AdminController
     {
         $form = new Form(new Product);
 
-        $form->text('title', __('Title'));
-        $form->textarea('description', __('Description'));
-        $form->image('image', __('Image'));
-        $form->switch('on_sale', __('On sale'))->default(1);
-        $form->decimal('rating', __('Rating'))->default(5.00);
-        $form->number('sold_count', __('Sold count'));
-        $form->number('review_count', __('Review count'));
-        $form->decimal('price', __('Price'));
+        $form->text('title', __('admin.title'))->rules('required');
+        $form->image('image', __('admin.image'))->rules('required');
+        $form->textarea('description', __('admin.description'))->rules('required');
+        $form->switch('on_sale', __('admin.on_sale'))
+            ->states(['on' => ['text' => '是'], 'off' => ['text' => '否']]);
+        $form->decimal('rating', __('admin.rating'))->default(5.00);
+        $form->number('sold_count', __('admin.sold_count'))->min(0);
+        $form->number('review_count', __('admin.review_count'))->min(0);
+//        $form->decimal('price', __('admin.price'))->rules('required');
+
+        // 直接添加一对多模型
+        $form->hasMany('skus', 'SKU 列表', function (Form\NestedForm $form) {
+            $form->text('title', 'SKU 名称')->rules('required');
+            $form->text('description', 'SKU 描述')->rules('required');
+            $form->text('price', '单价')->rules('required|numeric|min:0.01');
+            $form->text('stock', '库存')->rules('required|integer|min:0.01');
+        });
+
+        // 定义事件回调，当模型即将保存时会触发
+        $form->saving(function (Form $form) {
+            $form->model()->price = collect($form->input('skus'))->where(Form::REMOVE_FLAG_NAME, 0)->min('price') ?: 0;
+        });
 
         return $form;
     }

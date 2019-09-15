@@ -107,6 +107,6 @@ return [
     'review_count' => '浏览量',
     'sold_count' => '销量',
     'rating' => '评分',
-    'on_sale' => '销售中',
+    'on_sale' => '上架',
     'image' => '图片',
 ];

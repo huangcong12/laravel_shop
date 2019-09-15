@@ -23,15 +23,25 @@ Route::group([
 
     // 编辑
     $router->get('/users/{id}/edit', 'UsersController@edit');
-    $router->post('/users/{id}', 'UsersController@update');
+    $router->put('/users/{id}', 'UsersController@update');
 
     // 显示
     $router->get('/users/{id}', 'UsersController@show');
 
     /**
-     * 商品列表
+     * 商品
      */
+    /* 列表 */
     Route::get('products', 'ProductsController@index');
+    // 新增
+    Route::get('products/create', 'ProductsController@create');
+    Route::post('products', 'ProductsController@store');
 
+    // 编辑
+    Route::get('products/{id}/edit', 'ProductsController@edit');
+    Route::put('products/{id}', 'ProductsController@update');
+
+    // 显示
+    $router->get('/products/{id}', 'ProductsController@show');
 
 });
