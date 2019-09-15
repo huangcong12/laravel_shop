@@ -9,7 +9,9 @@ Route::group([
     'namespace' => config('admin.route.namespace'),
     'middleware' => config('admin.route.middleware'),
 ], function (Router $router) {
-
+    /**
+     * 用户列表
+     */
     $router->get('/', 'HomeController@index')->name('admin.home');
 
     // 新增
@@ -25,5 +27,11 @@ Route::group([
 
     // 显示
     $router->get('/users/{id}', 'UsersController@show');
+
+    /**
+     * 商品列表
+     */
+    Route::get('products', 'ProductsController@index');
+
 
 });

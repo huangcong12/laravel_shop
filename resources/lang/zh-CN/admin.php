@@ -103,4 +103,10 @@ return [
     'prev' => '上一步',
     'next' => '下一步',
     'quick_create' => '快速创建',
+    'price' => '价格',
+    'review_count' => '浏览量',
+    'sold_count' => '销量',
+    'rating' => '评分',
+    'on_sale' => '销售中',
+    'image' => '图片',
 ];

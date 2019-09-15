@@ -18,6 +18,7 @@ Auth::routes(['verify' => true]);
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::group(['middleware' => ['auth', 'verified']], function () {
+
     // 列表
     Route::get('user_addresses', 'UserAddressesController@index')->name('user_addresses.index');
     // 显示新增页面
@@ -31,5 +32,4 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 
     // 删除
     Route::delete('user_addresses/{userAddress}', 'UserAddressesController@destroy')->name('user_addresses.destroy');
-
 });
