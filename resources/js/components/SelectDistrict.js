@@ -2,14 +2,14 @@
 const addressData = require('china-area-data/v3/data');
 
 // 引入loadsh,loadsh 是一个实用工具库，提供了很多常用的方法
-import 'lodash';
+import _ from 'lodash';
 
 //  注册一个名为 select-district 的 Vue 组件
 Vue.component('select-district', {
     // 定义组件的属性
     props: {
         // 用来初始化省市区的值，在编辑的时候用到
-        intValue: {
+        initValue: {
             type: Array, // 格式是数组
             default: () => ([]),
         }
@@ -89,6 +89,8 @@ Vue.component('select-district', {
                 this.provinceId = '';
                 return
             }
+            // 找到了将当前省份设置成相应的省
+            this.provinceId = provinceId;
 
             // 从当前省份中查找城市的值
             const cityId = _.findKey(addressData[provinceId], o => o === value[1]);

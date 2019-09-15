@@ -54,4 +54,54 @@ class UserAddressesController extends Controller
 
         return redirect()->route('user_addresses.index');
     }
+
+    /**
+     * 显示编辑页面
+     *
+     * @param UserAddressRequest $request
+     */
+    public function edit(UserAddress $userAddress)
+    {
+        $this->authorize('own', $userAddress);
+
+        return view('user_addresses/create_and_edit', [
+            'address' => $userAddress
+        ]);
+    }
+
+    /**
+     * 保存编辑信息
+     *
+     * @param UserAddressRequest $userAddress
+     */
+    public function update(UserAddress $userAddress, UserAddressRequest $request)
+    {
+        $this->authorize('own', $userAddress);
+
+        $userAddress->update($request->only([
+            'province',
+            'city',
+            'district',
+            'address',
+            'zip',
+            'contact_phone',
+            'contact_name'
+        ]));
+
+        return redirect()->route('user_addresses.index');
+    }
+
+    /**
+     * 删除
+     *
+     * @param UserAddress $userAddress
+     */
+    public function destroy(UserAddress $userAddress)
+    {
+        $this->authorize('own', $userAddress);
+
+        $userAddress->delete();
+
+        return [];
+    }
 }
