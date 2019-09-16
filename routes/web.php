@@ -11,7 +11,7 @@
 |
 */
 
-Route::get('/', 'HomeController@index')->name('home');
+Route::get('/', 'ProductsController@index')->name('products.index');
 
 Auth::routes(['verify' => true]);
 

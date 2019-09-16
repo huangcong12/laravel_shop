@@ -2,8 +2,10 @@
 
 namespace App;
 
+use Illuminate\Contracts\Cache\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
@@ -24,5 +26,17 @@ class Product extends Model
     public function skus()
     {
         return $this->hasMany(ProductSku::class);
+    }
+
+    /**
+     * 获取完整的图片链接
+     */
+    public function getImageUrlAttribute()
+    {
+        if (filter_var($this->attributes['image'], FILTER_VALIDATE_URL)) {
+            return $this->attributes['image'];
+        }
+
+        return Storage::disk('public')->url($this->attributes['image']);
     }
 }
