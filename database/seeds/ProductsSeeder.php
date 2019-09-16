@@ -14,7 +14,7 @@ class ProductsSeeder extends Seeder
     public function run()
     {
         // 创建 30 个商品
-        $products = factory(Product::class, 1)->create();
+        $products = factory(Product::class, 30)->create();
         foreach ($products as $product) {
             // 每个商品生成 3 个 sku
             $skus = factory(ProductSku::class, 3)->create([
@@ -22,7 +22,8 @@ class ProductsSeeder extends Seeder
             ]);
 
             // 找出价格最低的 sku，然后保存给商品当价格
-            $product->save(['price' => $skus->min('price')]);
+            $product->price = $skus->min('price');
+            $product->save();
         }
     }
 }

@@ -23,9 +23,9 @@ $factory->define(Product::class, function (Faker $faker) {
         'description' => $faker->sentence,
         'image' => $image,
         'on_sale' => true,
-        'rating' => $faker->randomNumber(5),
-        'sold_count' => 0,
-        'review_count' => 0,
+        'rating' => $faker->randomNumber(2),
+        'sold_count' => $faker->randomNumber(3),
+        'review_count' => $faker->randomNumber(3),
         'price' => 0,
     ];
 });
