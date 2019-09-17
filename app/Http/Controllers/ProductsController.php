@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\InternalException;
 use App\Product;
-use Exception;
 use Illuminate\Http\Request;
 
 class ProductsController extends Controller
@@ -55,7 +55,7 @@ class ProductsController extends Controller
     public function show(Product $product, Request $request)
     {
         if (!$product->on_sale) {
-            throw new Exception('商品未上架');
+            throw new InternalException('商品未上架');
         }
 
         return view('products.show', ['product' => $product]);
