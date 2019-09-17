@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Product;
+use Exception;
 use Illuminate\Http\Request;
 
 class ProductsController extends Controller
@@ -43,5 +44,20 @@ class ProductsController extends Controller
                 'order' => $order
             ]
         ]);
+    }
+
+    /**
+     * 商品详情页
+     *
+     * @param Product $product
+     * @param Request $request
+     */
+    public function show(Product $product, Request $request)
+    {
+        if (!$product->on_sale) {
+            throw new Exception('商品未上架');
+        }
+
+        return view('products.show', ['product' => $product]);
     }
 }

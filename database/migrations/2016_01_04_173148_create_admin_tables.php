@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateAdminTables extends Migration
 {
+    /*INSERT INTO `laravel-shop`.admin_users (id, username, password, name, avatar, remember_token, created_at, updated_at) VALUES (1, 'admin', '$2y$10$W3QR7feFKZ4OIY.xnKHp7ek65HIE7DlK2dAtgO2kaKD4PERLQ2SXi', 'Administrator', null, 'XVhXOc4jSDADtn7KSUWVX3VyRTbuhZPI6GULACAHcWXk82d6k8mVxtHC8XaG', '2019-09-16 09:44:32', '2019-09-16 09:44:32');*/
+
     /**
      * {@inheritdoc}
      */

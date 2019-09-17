@@ -12,6 +12,9 @@
 */
 
 Route::get('/', 'ProductsController@index')->name('products.index');
+// 详情页
+Route::get('products/{product}', 'ProductsController@show')->name('products.show');
+
 
 Auth::routes(['verify' => true]);
 
@@ -33,3 +36,5 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     // 删除
     Route::delete('user_addresses/{userAddress}', 'UserAddressesController@destroy')->name('user_addresses.destroy');
 });
+
+
