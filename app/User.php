@@ -6,6 +6,8 @@ use Eloquent;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
@@ -71,8 +73,25 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
+    /**
+     * 一个人可以拥有多个收货地址
+     *
+     * @return HasMany
+     */
     public function address()
     {
         return $this->hasMany(UserAddress::class);
+    }
+
+    /**
+     * 收藏是多对多关系
+     *
+     * @return BelongsToMany
+     */
+    public function favoriteProducts()
+    {
+        return $this->belongsToMany(Product::class, 'user_favorite_products')
+            ->withTimestamps()
+            ->orderBy('user_favorite_products.created_at', 'desc');
     }
 }
