@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\InternalException;
 use App\Product;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class ProductsController extends Controller
 {
@@ -64,6 +66,19 @@ class ProductsController extends Controller
         }
 
         return view('products.show', ['product' => $product, 'favored' => $favored]);
+    }
+
+    /**
+     * 搜藏商品展示页
+     *
+     * @param Request $request
+     * @return Factory|View
+     */
+    public function favorites(Request $request)
+    {
+        $products = $request->user()->favoriteProducts()->paginate(16);
+
+        return view('products.favorites', ['products' => $products]);
     }
 
     /**

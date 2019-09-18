@@ -11,11 +11,6 @@
 |
 */
 
-Route::get('/', 'ProductsController@index')->name('products.index');
-// 详情页
-Route::get('products/{product}', 'ProductsController@show')->name('products.show');
-
-
 Auth::routes(['verify' => true]);
 
 Route::get('/home', 'HomeController@index')->name('home');
@@ -36,10 +31,16 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     // 删除
     Route::delete('user_addresses/{userAddress}', 'UserAddressesController@destroy')->name('user_addresses.destroy');
 
+    // 展示收藏的商品页
+    Route::get('products/favorites', 'ProductsController@favorites')->name('products.favorites');
     // 收藏商品
     Route::post('products/{product}/favorite', 'ProductsController@favor')->name('products.favor');
     // 取消收藏
     Route::delete('products/{product}/favorite', 'ProductsController@disfavor')->name('products.disfavor');
 });
+
+Route::get('/', 'ProductsController@index')->name('products.index');
+// 详情页
+Route::get('products/{product}', 'ProductsController@show')->name('products.show');
 
 
