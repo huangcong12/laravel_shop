@@ -2,7 +2,7 @@
 @section('title', $product->title)
 
 @section('content')
-    <div class="row">
+    <div class="row" id="product-show">
         <div class="col-md-10 offset-lg-1">
             <div class="card">
                 <div class="card-body product-info">
@@ -90,9 +90,11 @@
             $('.sku-btn').click(function () {
                 $('.product-info .price span').text($(this).data('price'));
                 $('.product-info .stock').text('库存：' + $(this).data('stock') + '件')
-            })
+            });
+            $('.sku-btn:first').trigger('click');
         });
 
+        // 增加收藏
         $('.btn-favor').on('click', function () {
             axios.post('{{ route('products.favor', ['product'=> $product->id]) }}')
                 .then(function () {
@@ -108,6 +110,7 @@
                 });
         });
 
+        // 取消收藏
         $('.btn-disfavor').on('click', function () {
             axios.delete('{{ route("products.disfavor", ['product' => $product->id]) }}')
                 .then(function () {
@@ -115,6 +118,24 @@
                         location.reload()
                     });
                 });
-        })
+        });
+
+        // 添加到购物车
+        $('.btn-add-to-cart').on('click', function () {
+            axios.post('{{ route('cart.add') }}', {
+                sku_id: $('label.active input[name=sku]').val(),
+                amount: $('.cart_amount input').val()
+            }).then(function () {
+                swal('加入购物车成功', '', 'success')
+            }, function (error) {
+                if (error.response && error.response.status === 401) {
+                    swal('请先登录', '', 'error');
+                } else if (error.response && (error.response.data.msg || error.response.data.message)) {
+                    swal(error.response.data.msg ? error.response.data.msg : error.response.data.message, '', 'error')
+                } else {
+                    swal('系统异常', '', 'error')
+                }
+            });
+        });
     </script>
 @endsection
