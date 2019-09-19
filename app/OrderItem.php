@@ -1,0 +1,33 @@
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+
+class OrderItem extends Model
+{
+    public $timestamps = false;
+    protected $fillable = [
+        'amount',
+        'price',
+        'rating',
+        'review',
+        'reviewed_at',
+    ];
+    protected $dates = ['reviewed_at'];
+
+    public function product()
+    {
+        return $this->belongsTo(ProductSku::class);
+    }
+
+    public function productSku()
+    {
+        return $this->belongsTo(ProductSku::class);
+    }
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+}
