@@ -3,7 +3,7 @@
 
 /**
  * A helper file for Laravel 5, to provide autocomplete information to your IDE
- * Generated for Laravel 6.0.3 on 2019-09-19 02:12:00.
+ * Generated for Laravel 6.0.3 on 2019-09-20 03:01:05.
  *
  * This file should not be included in your code, only analyzed by your IDE!
  *
@@ -89,6 +89,7 @@ namespace Illuminate\Support\Facades {
     use Illuminate\Notifications\ChannelManager;
     use Illuminate\Queue\QueueManager;
     use Illuminate\Queue\SyncQueue;
+    use Illuminate\Redis\RedisManager;
     use Illuminate\Routing\Exceptions\UrlGenerationException;
     use Illuminate\Routing\PendingResourceRegistration;
     use Illuminate\Routing\Redirector;
@@ -8351,6 +8352,107 @@ namespace Illuminate\Support\Facades {
         public static function hasMacro($name)
         {
             return Redirector::hasMacro($name);
+        }
+
+    }
+
+    /**
+     *
+     *
+     * @see \Illuminate\Redis\RedisManager
+     * @see \Illuminate\Contracts\Redis\Factory
+     */
+    class Redis
+    {
+
+        /**
+         * Get a Redis connection by name.
+         *
+         * @param string|null $name
+         * @return \Illuminate\Redis\Connections\Connection
+         * @static
+         */
+        public static function connection($name = null)
+        {
+            /** @var RedisManager $instance */
+            return $instance->connection($name);
+        }
+
+        /**
+         * Resolve the given connection by name.
+         *
+         * @param string|null $name
+         * @return \Illuminate\Redis\Connections\Connection
+         * @throws InvalidArgumentException
+         * @static
+         */
+        public static function resolve($name = null)
+        {
+            /** @var RedisManager $instance */
+            return $instance->resolve($name);
+        }
+
+        /**
+         * Return all of the created connections.
+         *
+         * @return array
+         * @static
+         */
+        public static function connections()
+        {
+            /** @var RedisManager $instance */
+            return $instance->connections();
+        }
+
+        /**
+         * Enable the firing of Redis command events.
+         *
+         * @return void
+         * @static
+         */
+        public static function enableEvents()
+        {
+            /** @var RedisManager $instance */
+            $instance->enableEvents();
+        }
+
+        /**
+         * Disable the firing of Redis command events.
+         *
+         * @return void
+         * @static
+         */
+        public static function disableEvents()
+        {
+            /** @var RedisManager $instance */
+            $instance->disableEvents();
+        }
+
+        /**
+         * Set the default driver.
+         *
+         * @param string $driver
+         * @return void
+         * @static
+         */
+        public static function setDriver($driver)
+        {
+            /** @var RedisManager $instance */
+            $instance->setDriver($driver);
+        }
+
+        /**
+         * Register a custom driver creator Closure.
+         *
+         * @param string $driver
+         * @param Closure $callback
+         * @return RedisManager
+         * @static
+         */
+        public static function extend($driver, $callback)
+        {
+            /** @var RedisManager $instance */
+            return $instance->extend($driver, $callback);
         }
 
     }
@@ -18246,6 +18348,10 @@ namespace {
     }
 
     class Redirect extends \Illuminate\Support\Facades\Redirect
+    {
+    }
+
+    class Redis extends \Illuminate\Support\Facades\Redis
     {
     }
 
