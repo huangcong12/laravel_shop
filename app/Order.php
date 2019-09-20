@@ -94,7 +94,7 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function item()
+    public function items()
     {
         return $this->hasMany(OrderItem::class);
     }

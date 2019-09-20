@@ -10,9 +10,36 @@ use App\ProductSku;
 use App\UserAddress;
 use Carbon\Carbon;
 use DB;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class OrdersController extends Controller
 {
+    /**
+     * 订单页
+     *
+     * @param Request $request
+     * @return Factory|View
+     */
+    public function index(Request $request)
+    {
+        $orders = Order::query()
+            ->with(['items.product', 'items.productSku'])
+            ->where('user_id', $request->user()->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate();
+
+        return view('orders.index', ['orders' => $orders]);
+    }
+
+
+    /**
+     * 生成订单
+     *
+     * @param OrderRequest $request
+     * @return mixed
+     */
     public function store(OrderRequest $request)
     {
         $user = $request->user();
@@ -44,7 +71,7 @@ class OrdersController extends Controller
             foreach ($items as $data) {
                 $sku = ProductSku::find($data['sku_id']);
 
-                $item = $order->item()->make([
+                $item = $order->items()->make([
                     'amount' => $data['amount'],
                     'price' => $sku->price
                 ]);
