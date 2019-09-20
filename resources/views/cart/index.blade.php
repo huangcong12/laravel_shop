@@ -19,7 +19,7 @@
                         </thead>
                         <tbody class="product_list">
                         @foreach($cartItems as $item)
-                            <tr data-id="{{ $item->id }}">
+                            <tr data-id="{{ $item->id }}" data-sku-id="{{ $item->productSku->id }}">
                                 <td><input type="checkbox" name="select" value="{{ $item->id }}"
                                         {{ $item->productSku->product->on_sale ? 'checked' : 'disabled' }}></td>
                                 <td class="product_info">
@@ -58,6 +58,38 @@
                         @endforeach
                         </tbody>
                     </table>
+
+                    <div>
+                        <form action="" class="form-horizontal" role="form" id="order-form">
+                            <div class="form-group row">
+                                <label class="col-form-label col-sm-3 text-md-right">选择收货地址</label>
+                                <div class="col-sm-9 col-md-7">
+                                    <select class="form-control" name="address">
+                                        @foreach($addresses as $address)
+                                            <option value="{{ $address->id }}">
+                                                {{ $address->full_address }}
+                                                {{ $address->contact_name }}
+                                                {{ $address->contact_phone }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-form-label col-sm-3 text-md-right">备注</label>
+                                <div class="col-sm-9 col-md-7">
+                                    <textarea name="remark" rows="3" class="form-control"></textarea>
+                                </div>
+                            </div>
+                            <div clas="form-group">
+                                <div class="offset-sm-3 col-sm-3">
+                                    <button type="button" class="btn btn-primary btn-create-order">提交订单</button>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -89,6 +121,51 @@
             $('input[name=select][type=checkbox]:not([disabled])').each(function () {
                 $(this).prop('checked', checked)
             });
+        });
+
+        $('.btn-create-order').on('click', function () {
+            var req = {
+                address_id: $('#order-form').find('select[name=address]').val(),
+                items: [],
+                remark: $('#order-form').find('textarea[name=remark]').val()
+            };
+            $('table tr[data-id]').each(function () {
+                var $checkbox = $(this).find('input[name=select][type=checkbox]');
+                if ($checkbox.prop('disabled') || !$checkbox.prop('checked')) {
+                    return;
+                }
+
+                var $input = $(this).find('input[name=amount]');
+                if ($input.val() == 0 || isNaN(($input.val()))) {
+                    return;
+                }
+
+                req.items.push({
+                    cart_id: $(this).data('id'),
+                    sku_id: $(this).data('sku-id'),
+                    amount: $input.val(),
+
+                })
+            });
+
+            axios.post('{{ route('orders.store') }}', req).then(
+                function (response) {
+                    swal('订单提交成功', '', 'success');
+                }, function (error) {
+                    if (error.response.status === 422) {
+                        var html = '<div>';
+                        _.each(error.response.data.errors, function (erors) {
+                            _.each(errors, function (error) {
+                                html += error + '<br>';
+                            })
+                        });
+                        html += '</div>';
+                        swal({content: $(html)[0], icon: 'error'})
+                    } else {
+                        swal('系统错误', '', 'error')
+                    }
+                }
+            );
         });
     </script>
 @endsection

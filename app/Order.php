@@ -73,7 +73,7 @@ class Order extends Model
         });
     }
 
-    public function findAvailableNo()
+    public static function findAvailableNo()
     {
         $prefix = date('YmdHis');
 
