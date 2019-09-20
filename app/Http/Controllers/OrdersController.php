@@ -33,6 +33,18 @@ class OrdersController extends Controller
         return view('orders.index', ['orders' => $orders]);
     }
 
+    /**
+     * 订单详情页
+     *
+     * @param Order $order
+     * @param Request $request
+     */
+    public function show(Order $order, Request $request)
+    {
+        $this->authorize('own', $order);
+        return view('orders.show', ['order' => $order->load(['items.productSku', 'items.product'])]);
+    }
+
 
     /**
      * 生成订单
