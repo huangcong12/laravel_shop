@@ -236,6 +236,6 @@ return [
     /**
      * 订单过期时间
      */
-    'order_ttl' => 30
+    'order_ttl' => 3600
 
 ];
