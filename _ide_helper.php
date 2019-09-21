@@ -3,7 +3,7 @@
 
 /**
  * A helper file for Laravel 5, to provide autocomplete information to your IDE
- * Generated for Laravel 6.0.3 on 2019-09-20 03:01:05.
+ * Generated for Laravel 6.0.3 on 2019-09-21 01:05:52.
  *
  * This file should not be included in your code, only analyzed by your IDE!
  *
@@ -87,9 +87,9 @@ namespace Illuminate\Support\Facades {
     use Illuminate\Mail\Mailer;
     use Illuminate\Mail\PendingMail;
     use Illuminate\Notifications\ChannelManager;
+    use Illuminate\Queue\Jobs\RedisJob;
     use Illuminate\Queue\QueueManager;
-    use Illuminate\Queue\SyncQueue;
-    use Illuminate\Redis\RedisManager;
+    use Illuminate\Queue\RedisQueue;
     use Illuminate\Routing\Exceptions\UrlGenerationException;
     use Illuminate\Routing\PendingResourceRegistration;
     use Illuminate\Routing\Redirector;
@@ -8061,6 +8061,74 @@ namespace Illuminate\Support\Facades {
         }
 
         /**
+         * Migrate the delayed jobs that are ready to the regular queue.
+         *
+         * @param string $from
+         * @param string $to
+         * @return array
+         * @static
+         */
+        public static function migrateExpiredJobs($from, $to)
+        {
+            /** @var RedisQueue $instance */
+            return $instance->migrateExpiredJobs($from, $to);
+        }
+
+        /**
+         * Delete a reserved job from the queue.
+         *
+         * @param string $queue
+         * @param RedisJob $job
+         * @return void
+         * @static
+         */
+        public static function deleteReserved($queue, $job)
+        {
+            /** @var RedisQueue $instance */
+            $instance->deleteReserved($queue, $job);
+        }
+
+        /**
+         * Delete a reserved job from the reserved queue and release it.
+         *
+         * @param string $queue
+         * @param RedisJob $job
+         * @param int $delay
+         * @return void
+         * @static
+         */
+        public static function deleteAndRelease($queue, $job, $delay)
+        {
+            /** @var RedisQueue $instance */
+            $instance->deleteAndRelease($queue, $job, $delay);
+        }
+
+        /**
+         * Get the queue or return the default.
+         *
+         * @param string|null $queue
+         * @return string
+         * @static
+         */
+        public static function getQueue($queue)
+        {
+            /** @var RedisQueue $instance */
+            return $instance->getQueue($queue);
+        }
+
+        /**
+         * Get the underlying Redis instance.
+         *
+         * @return \Illuminate\Contracts\Redis\Factory
+         * @static
+         */
+        public static function getRedis()
+        {
+            /** @var RedisQueue $instance */
+            return $instance->getRedis();
+        }
+
+        /**
          * Get the retry delay for an object-based queue handler.
          *
          * @param mixed $job
@@ -8070,7 +8138,7 @@ namespace Illuminate\Support\Facades {
         public static function getJobRetryDelay($job)
         {
             //Method inherited from \Illuminate\Queue\Queue
-            /** @var SyncQueue $instance */
+            /** @var RedisQueue $instance */
             return $instance->getJobRetryDelay($job);
         }
 
@@ -8084,7 +8152,7 @@ namespace Illuminate\Support\Facades {
         public static function getJobExpiration($job)
         {
             //Method inherited from \Illuminate\Queue\Queue
-            /** @var SyncQueue $instance */
+            /** @var RedisQueue $instance */
             return $instance->getJobExpiration($job);
         }
 
@@ -8098,7 +8166,7 @@ namespace Illuminate\Support\Facades {
         public static function createPayloadUsing($callback)
         {
             //Method inherited from \Illuminate\Queue\Queue
-            SyncQueue::createPayloadUsing($callback);
+            RedisQueue::createPayloadUsing($callback);
         }
 
         /**
@@ -8111,7 +8179,7 @@ namespace Illuminate\Support\Facades {
         public static function setContainer($container)
         {
             //Method inherited from \Illuminate\Queue\Queue
-            /** @var SyncQueue $instance */
+            /** @var RedisQueue $instance */
             $instance->setContainer($container);
         }
 
@@ -8352,107 +8420,6 @@ namespace Illuminate\Support\Facades {
         public static function hasMacro($name)
         {
             return Redirector::hasMacro($name);
-        }
-
-    }
-
-    /**
-     *
-     *
-     * @see \Illuminate\Redis\RedisManager
-     * @see \Illuminate\Contracts\Redis\Factory
-     */
-    class Redis
-    {
-
-        /**
-         * Get a Redis connection by name.
-         *
-         * @param string|null $name
-         * @return \Illuminate\Redis\Connections\Connection
-         * @static
-         */
-        public static function connection($name = null)
-        {
-            /** @var RedisManager $instance */
-            return $instance->connection($name);
-        }
-
-        /**
-         * Resolve the given connection by name.
-         *
-         * @param string|null $name
-         * @return \Illuminate\Redis\Connections\Connection
-         * @throws InvalidArgumentException
-         * @static
-         */
-        public static function resolve($name = null)
-        {
-            /** @var RedisManager $instance */
-            return $instance->resolve($name);
-        }
-
-        /**
-         * Return all of the created connections.
-         *
-         * @return array
-         * @static
-         */
-        public static function connections()
-        {
-            /** @var RedisManager $instance */
-            return $instance->connections();
-        }
-
-        /**
-         * Enable the firing of Redis command events.
-         *
-         * @return void
-         * @static
-         */
-        public static function enableEvents()
-        {
-            /** @var RedisManager $instance */
-            $instance->enableEvents();
-        }
-
-        /**
-         * Disable the firing of Redis command events.
-         *
-         * @return void
-         * @static
-         */
-        public static function disableEvents()
-        {
-            /** @var RedisManager $instance */
-            $instance->disableEvents();
-        }
-
-        /**
-         * Set the default driver.
-         *
-         * @param string $driver
-         * @return void
-         * @static
-         */
-        public static function setDriver($driver)
-        {
-            /** @var RedisManager $instance */
-            $instance->setDriver($driver);
-        }
-
-        /**
-         * Register a custom driver creator Closure.
-         *
-         * @param string $driver
-         * @param Closure $callback
-         * @return RedisManager
-         * @static
-         */
-        public static function extend($driver, $callback)
-        {
-            /** @var RedisManager $instance */
-            return $instance->extend($driver, $callback);
         }
 
     }
@@ -18348,10 +18315,6 @@ namespace {
     }
 
     class Redirect extends \Illuminate\Support\Facades\Redirect
-    {
-    }
-
-    class Redis extends \Illuminate\Support\Facades\Redis
     {
     }
 
