@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Order;
+use Carbon\Carbon;
 use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -25,7 +26,7 @@ class CloseOrder implements ShouldQueue
     {
         $this->order = $order;
         // 设置延迟的时间，delay() 方法的参数代表多少秒之后执行
-        $this->delay($delay);
+        $this->delay(Carbon::now()->addSecond($delay));
     }
 
     /**

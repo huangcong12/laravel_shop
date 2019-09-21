@@ -61,7 +61,7 @@ class OrderService
             $skuIds = collect($items)->pluck('sku_id');
             $user->cartItems()->whereIn('product_sku_id', $skuIds)->delete();
 
-            dispatch(new CloseOrder($order))->delay(now()->addSecond(config('app.order_ttl')));
+            dispatch(new CloseOrder($order, config('app.order_ttl')));
             return $order;
         });
     }
