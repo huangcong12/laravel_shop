@@ -6,6 +6,7 @@ use App\Order;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
 
 class OrdersController extends AdminController
@@ -16,6 +17,33 @@ class OrdersController extends AdminController
      * @var string
      */
     protected $title = 'App\Order';
+
+    /**
+     * Index interface.
+     *
+     * @param Content $content
+     *
+     * @return Content
+     */
+    public function index(Content $content)
+    {
+        $this->title = '订单列表页';
+        return parent::index($content);
+    }
+
+    /**
+     * Show interface.
+     *
+     * @param mixed $id
+     * @param Content $content
+     *
+     * @return Content
+     */
+    public function show($id, Content $content)
+    {
+        $this->title = '订单详情';
+        return parent::show($id, $content);
+    }
 
     /**
      * Make a grid builder.
@@ -62,26 +90,39 @@ class OrdersController extends AdminController
      */
     protected function detail($id)
     {
-        $show = new Show(Order::findOrFail($id));
+        $order = Order::findOrFail($id);
+        $show = new Show($order);
 
         $show->field('id', __('Id'));
         $show->field('no', __('No'));
-        $show->field('user_id', __('User id'));
-        $show->field('address', __('Address'));
-        $show->field('total_amount', __('Total amount'));
-        $show->field('remark', __('Remark'));
-        $show->field('paid_at', __('Paid at'));
-        $show->field('payment_method', __('Payment method'));
-        $show->field('payment_no', __('Payment no'));
-        $show->field('refund_status', __('Refund status'));
-        $show->field('refund_no', __('Refund no'));
-        $show->field('closed', __('Closed'));
+        $show->field('user_id', '买家 ID');
+        $show->field('user.name', '买家')->as(function ($value) use ($order) {
+            return $order->user->name;
+        });
+        $show->field('address', '地址')->as(function ($value) {
+            return $value['addresses'] . ' ' . $value['contact_name'] . ' ' . $value['contact_phone'];
+        });
+
+        $show->field('total_amount', '总价格');
+        $show->field('remark', '备注');
+        $show->field('paid_at', '付款时间');
+        $show->field('payment_method', '支付方式');
+        $show->field('payment_no', '流水号');
+        $show->field('refund_status', '退款状态')->as(function ($value) {
+            return Order::$refundStatusMap[$value];
+        });
+        $show->field('refund_no', '退款单号');
+        $show->field('closed', '订单是否已关闭')->as(function ($value) {
+            return $value ? '关闭' : '未关闭';
+        });
         $show->field('reviewed', __('Reviewed'));
-        $show->field('ship_status', __('Ship status'));
-        $show->field('ship_data', __('Ship data'));
-        $show->field('extra', __('Extra'));
-        $show->field('created_at', __('Created at'));
-        $show->field('updated_at', __('Updated at'));
+        $show->field('ship_status', '物流状态')->as(function ($value) {
+            return Order::$shipStatusMap[$value];
+        });
+        $show->field('ship_data', '物流信息');
+        $show->field('extra', '扩展信息');
+        $show->field('created_at', '订单生成时间');
+        $show->field('updated_at', '订单更新时间');
 
         return $show;
     }

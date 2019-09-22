@@ -38,6 +38,7 @@ class Order extends Model
         'remark',
         'paid_at',
         'payment_method',
+        'payment_no',
         'refund_status',
         'refund_no',
         'closed',
