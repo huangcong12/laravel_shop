@@ -44,4 +44,10 @@ Route::group([
     // 显示
     $router->get('/products/{id}', 'ProductsController@show');
 
+    /**
+     * 订单
+     */
+    // 列表页
+    $router->resource('orders', OrdersController::class);
+
 });
