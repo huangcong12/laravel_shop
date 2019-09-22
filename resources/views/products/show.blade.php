@@ -101,7 +101,9 @@
                     swal('操作成功', '', 'success')
                 }, function (error) {
                     if (error.response && error.response.status === 401) {
-                        swal('请先登录', '', 'error');
+                        swal('请先登录', '', 'error').then(function () {
+                            location.href = '{{ route('login') }}'
+                        });
                     } else if (error.response && (error.response.data.msg || error.response.data.message)) {
                         swal(error.response.data.msg ? error.response.data.msg : error.response.data.message, '', 'error')
                     } else {
@@ -131,7 +133,9 @@
                 })
             }, function (error) {
                 if (error.response && error.response.status === 401) {
-                    swal('请先登录', '', 'error');
+                    swal('请先登录', '', 'error').then(function () {
+                        location.href = '{{ route('login') }}'
+                    });
                 } else if (error.response && (error.response.data.msg || error.response.data.message)) {
                     swal(error.response.data.msg ? error.response.data.msg : error.response.data.message, '', 'error')
                 } else {
