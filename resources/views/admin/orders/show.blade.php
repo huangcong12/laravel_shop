@@ -42,7 +42,7 @@
             @endforeach
             <tr>
                 <td>订单金额：</td>
-                <td colspan="3">￥{{ $order->total_amount }}</td>
+                <td>￥{{ $order->total_amount }}</td>
                 <td>发货状态</td>
                 <td>{{ \App\Order::$shipStatusMap[$order->ship_status] }}</td>
             </tr>

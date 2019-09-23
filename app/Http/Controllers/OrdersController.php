@@ -61,4 +61,24 @@ class OrdersController extends Controller
 
         return $orderService->store($user, $address, $request->get('remark'), $request->get('items'));
     }
+
+    /**
+     * 收货
+     *
+     * @param Order $order
+     * @param Request $request
+     */
+    public function received(Order $order, Request $request)
+    {
+        // 校验权限
+        $this->authorize('own', $order);
+
+        if ($order->ship_status != Order::SHIP_STATUS_DELIVERED) {
+            throw  new InvalidRequestException('发货状态不正确');
+        }
+
+        $order->update(['ship_status' => Order::SHIP_STATUS_RECEIVED]);
+
+        return redirect()->back();
+    }
 }

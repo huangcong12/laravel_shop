@@ -58,6 +58,18 @@
                             <div class="line-label">订单编号：</div>
                             <div class="line-value">{{ $order->no }}</div>
                         </div>
+                        {{-- 物流信息 --}}
+                        <div class="line">
+                            <div class="line-label">物流状态：</div>
+                            <div class="line-value">{{ \App\Order::$shipStatusMap[$order->ship_status] }}</div>
+                        </div>
+                        @if($order->ship_data)
+                            <div class="line">
+                                <div class="line-label">物流信息：</div>
+                                <div
+                                    class="line-label">{{ $order->ship_data['express_company'] }} {{ $order->ship_data['express_no'] }}</div>
+                            </div>
+                        @endif
                     </div>
                     <div class="order-summary text-right">
                         <div class="total-amount">
@@ -81,10 +93,39 @@
                                        class="btn btn-primary btn-sm">支付宝支付</a>
                                 </div>
                             @endif
+
+                            @if($order->ship_status == \App\Order::SHIP_STATUS_DELIVERED)
+                                <div class="receive-button">
+                                    {{--                                    <form action="{{ route('orders.received', [$order->id]) }}" method="post">--}}
+                                    {{--                                        {{ csrf_field() }}--}}
+                                    <button id="btn-receive" class="btn btn-sm btn-success">确认收货</button>
+                                    {{--                                    </form>--}}
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+@endsection
+
+@section('scriptsAfterJs')
+    <script>
+        $('#btn-receive').on('click', function () {
+            swal({
+                title: '确认已收到商品?',
+                icon: 'warning',
+                dangerMode: true,
+                buttons: ['取消', '确认收到']
+            }).then(function (ret) {
+                if (!ret) {
+                    return
+                }
+                axios.post('{{ route('orders.received', [$order->id]) }}').then(function () {
+                    location.reload()
+                })
+            })
+        })
+    </script>
 @endsection
