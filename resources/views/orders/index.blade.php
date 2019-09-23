@@ -71,6 +71,13 @@
                                                         <td rowspan="{{ count($order->items) }}" class="text-center">
                                                             <a href="{{ route('orders.show', ['order'=>$order->id]) }}"
                                                                class="btn btn-primary btn-sm">查看订单</a>
+                                                            @if($order->paid_at)
+                                                                <a href="{{ route('orders.review.show', [$order->id]) }}"
+                                                                   class="btn btn-sm btn-success">{{ $order->reviewed ? '查看评价' : '评价' }}</a>
+                                                            @elseif(!$order->paid_at && !$order->closed)
+                                                                <a href="{{ route('payment.alipay', ['order'=>$order->id]) }}"
+                                                                   class="btn btn-primary btn-sm">支付宝支付</a>
+                                                            @endif
                                                         </td>
                                                     @endif
                                                 </tr>

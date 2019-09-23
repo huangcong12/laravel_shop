@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\InternalException;
+use App\OrderItem;
 use App\Product;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
@@ -65,7 +66,19 @@ class ProductsController extends Controller
             $favored = boolval($request->user()->favoriteProducts()->find($product->id));
         }
 
-        return view('products.show', ['product' => $product, 'favored' => $favored]);
+        $reviews = OrderItem::query()
+            ->with(['order.user', 'productSku'])
+            ->where('product_id', $product->id)
+            ->whereNotNull('reviewed_at')
+            ->orderBy('reviewed_at', 'desc')
+            ->limit(10)
+            ->get();
+
+        return view('products.show', [
+            'product' => $product,
+            'favored' => $favored,
+            'reviews' => $reviews,
+        ]);
     }
 
     /**
