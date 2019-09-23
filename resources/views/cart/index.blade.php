@@ -154,7 +154,7 @@
                 }, function (error) {
                     if (error.response.status === 422) {
                         var html = '<div>';
-                        _.each(error.response.data.errors, function (erors) {
+                        _.each(error.response.data.errors, function (errors) {
                             _.each(errors, function (error) {
                                 html += error + '<br>';
                             })
