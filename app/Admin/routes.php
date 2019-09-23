@@ -48,6 +48,10 @@ Route::group([
      * 订单
      */
     // 列表页
-    $router->resource('orders', OrdersController::class);
+    $router->get('orders', 'OrdersController@index')->name('admin.orders.index');
+    // 详情
+    $router->get('orders/{order}', 'OrdersController@show')->name('admin.orders.show');
+    // 增加物流信息
+    $router->post('orders/{order}/ship', 'OrdersController@ship')->name('admin.orders.ship');
 
 });
