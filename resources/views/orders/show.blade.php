@@ -70,13 +70,22 @@
                                     class="line-label">{{ $order->ship_data['express_company'] }} {{ $order->ship_data['express_no'] }}</div>
                             </div>
                         @endif
+                        @if($order->paid_at && $order->refund_status !== \App\Order::REFUND_STATUS_PENDING)
+                            <div class="line">
+                                <div class="line-label">退款状态：</div>
+                                <div class="line-value">{{ \App\Order::$refundStatusMap[$order->refund_status] }}</div>
+                            </div>
+                            <div class="line">
+                                <div class="line-label">退款理由：</div>
+                                <div class="line-value">{{ $order->extra['refund_reason'] }}</div>
+                            </div>
+                        @endif
                     </div>
                     <div class="order-summary text-right">
                         <div class="total-amount">
                             <span>订单总价：</span>
                             <div class="value">￥{{ $order->total_amount }}</div>
                         </div>
-                        <div>
                             <span>订单状态：</span>
                             <div class="value">
                                 @if($order->paid_at)
@@ -87,21 +96,26 @@
                                 @else 未支付
                                 @endif
                             </div>
-                            @if(!$order->paid_at && !$order->closed)
-                                <div class="payment-buttons">
-                                    <a href="{{ route('payment.alipay', ['order'=>$order->id]) }}"
-                                       class="btn btn-primary btn-sm">支付宝支付</a>
-                                </div>
-                            @endif
+                        <div>
+                            <div class="row float-right">
+                                @if(!$order->paid_at && !$order->closed)
+                                    <div class="payment-buttons">
+                                        <a href="{{ route('payment.alipay', ['order'=>$order->id]) }}"
+                                           class="btn btn-primary btn-sm">支付宝支付</a>
+                                    </div>
+                                @endif
 
-                            @if($order->ship_status == \App\Order::SHIP_STATUS_DELIVERED)
-                                <div class="receive-button">
-                                    {{--                                    <form action="{{ route('orders.received', [$order->id]) }}" method="post">--}}
-                                    {{--                                        {{ csrf_field() }}--}}
-                                    <button id="btn-receive" class="btn btn-sm btn-success">确认收货</button>
-                                    {{--                                    </form>--}}
-                                </div>
-                            @endif
+                                @if($order->ship_status == \App\Order::SHIP_STATUS_DELIVERED)
+                                    <div class="receive-button">
+                                        <button id="btn-receive" class="btn btn-sm btn-success">确认收货</button>
+                                    </div>
+                                @endif
+                                @if($order->paid_at && $order->refund_status === \App\Order::REFUND_STATUS_PENDING)
+                                    <div class="refund-button">
+                                        <button class="btn btn-sm btn-danger" id="btn-apply-refund">申请退款</button>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -125,6 +139,25 @@
                 axios.post('{{ route('orders.received', [$order->id]) }}').then(function () {
                     location.reload()
                 })
+            })
+        });
+
+        $('#btn-apply-refund').on('click', function () {
+            swal({
+                text: '请输入退款路由',
+                content: 'input'
+            }).then(function (input) {
+                if (!input) {
+                    swal('退款理由不能为空', '', 'error');
+                    return
+                }
+
+                axios.post('{{ route('orders.apply_refund', [$order->id]) }}', {reason: input})
+                    .then(function () {
+                        swal('申请退款成功', '', 'success').then(function () {
+                            location.reload()
+                        })
+                    })
             })
         })
     </script>

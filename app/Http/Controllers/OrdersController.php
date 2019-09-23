@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Events\OrderReviewed;
 use App\Exceptions\InvalidRequestException;
+use App\Http\Requests\ApplyRefundRequest;
 use App\Http\Requests\OrderRequest;
 use App\Order;
 use App\Services\OrderService;
 use App\UserAddress;
 use Carbon\Carbon;
 use DB;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -131,5 +133,32 @@ class OrdersController extends Controller
         });
 
         return redirect()->back();
+    }
+
+    /**
+     * 申请退款
+     *
+     * @param Order $order
+     * @param ApplyRefundRequest $request
+     * @throws AuthorizationException
+     */
+    public function applyRefund(Order $order, ApplyRefundRequest $request)
+    {
+        $this->authorize('own', $order);
+        if (!$order->paid_at) {
+            throw new InvalidRequestException('订单未支付，不能退款');
+        } elseif ($order->refund_status !== Order::REFUND_STATUS_PENDING) {
+            throw new InvalidRequestException('该订单已申请过退款');
+        }
+
+        $extra = $order->extra ?: [];
+        $extra['refund_reason'] = $request->input('reason');
+
+        $order->update([
+            'refund_status' => Order::REFUND_STATUS_APPLIED,
+            'extra' => $extra
+        ]);
+
+        return $order;
     }
 }
