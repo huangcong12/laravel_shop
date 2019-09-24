@@ -59,5 +59,5 @@ Route::group([
     /**
      * 优惠券
      */
-    $router->get('coupon_codes', 'CouponCodesController@index')->name('admin.coupon_codes.index');
+    $router->resource('coupon_codes', 'CouponCodesController');
 });
