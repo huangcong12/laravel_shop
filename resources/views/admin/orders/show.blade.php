@@ -84,7 +84,61 @@
                     <td>{{ $order->ship_data['express_no'] }}</td>
                 </tr>
             @endif
+
+            @if($order->refund_status != \App\Order::REFUND_STATUS_PENDING)
+                <tr>
+                    <td>退款状态：</td>
+                    <td colspan="2">{{ \App\Order::$refundStatusMap[$order->refund_status] }}
+                        ，理由：{{ $order->extra['refund_reason'] }}</td>
+                    <td>
+                        @if($order->refund_status === \App\Order::REFUND_STATUS_APPLIED)
+                            <button id="btn-refund-agree" class="btn btn-sm btn-success">同意</button>
+                            <button id="btn-refund-disagree" class="btn btn-sm btn-danger">不同意</button>
+                        @endif
+                    </td>
+                </tr>
+            @endif
             </tbody>
         </table>
     </div>
 </div>
+
+<script>
+    $('#btn-refund-disagree').on('click', function () {
+        swal({
+            title: '请输入退款理由',
+            input: 'text',
+            showCancelButton: true,
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            showLoaderOnConfirm: true,
+            preConfirm: function (inputValue) {
+                if (!inputValue) {
+                    swal('理由不能为空', '', 'error');
+                    return false
+                }
+                return $.ajax({
+                    url: '{{ route('admin.orders.refund', [$order->id]) }}',
+                    type: 'POST',
+                    data: JSON.stringify({
+                        agree: false,
+                        reason: inputValue,
+                        _token: LA.token,
+                    }),
+                    contentType: 'application/json',
+                });
+            }
+        }).then(function (ret) {
+            if (ret.dismiss == 'cancel') {
+                return;
+            }
+
+            swal({
+                title: '操作成功',
+                type: 'success'
+            }).then(function () {
+                location.reload()
+            })
+        })
+    });
+</script>
