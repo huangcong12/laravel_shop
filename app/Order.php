@@ -2,8 +2,10 @@
 
 namespace App;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Log;
+use Ramsey\Uuid\Uuid;
 
 class Order extends Model
 {
@@ -74,6 +76,12 @@ class Order extends Model
         });
     }
 
+    /**
+     * 生成订单号
+     *
+     * @return bool|string
+     * @throws Exception
+     */
     public static function findAvailableNo()
     {
         $prefix = date('YmdHis');
@@ -88,6 +96,18 @@ class Order extends Model
         Log::warning('find order no failed');
 
         return false;
+    }
+
+    /**
+     * 生成退款单号
+     */
+    public static function getAvailableRefundNo()
+    {
+        do {
+            $no = Uuid::uuid4()->getHex();
+        } while (self::query()->where('refund_no', $no)->exists());
+
+        return $no;
     }
 
     public function user()
