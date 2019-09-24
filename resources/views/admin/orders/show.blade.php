@@ -88,8 +88,11 @@
             @if($order->refund_status != \App\Order::REFUND_STATUS_PENDING)
                 <tr>
                     <td>退款状态：</td>
-                    <td colspan="2">{{ \App\Order::$refundStatusMap[$order->refund_status] }}
-                        ，理由：{{ $order->extra['refund_reason'] }}</td>
+                    <td>{{ \App\Order::$refundStatusMap[$order->refund_status] }}</td>
+                    @if(isset($order->extra['refund_reason']))
+                        <td>理由：</td>
+                        <td>{{ $order->extra['refund_reason'] }}</td>
+                    @endif
                     <td>
                         @if($order->refund_status === \App\Order::REFUND_STATUS_APPLIED)
                             <button id="btn-refund-agree" class="btn btn-sm btn-success">同意</button>
