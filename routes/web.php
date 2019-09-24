@@ -59,11 +59,14 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('orders/{order}/review', 'OrdersController@sendReview')->name('orders.review.store');
     // 退款
     Route::post('orders/{order}/apply_refund', 'OrdersController@applyRefund')->name('orders.apply_refund');
+    // 优惠券
+    Route::post('coupon_codes/{code}', 'CouponCodesController@show')->name('coupon_codes.show');
 
     // 发起支付宝支付
     Route::get('payment/{order}/alipay', 'PaymentController@payByAlipay')->name('payment.alipay');
     // 支付宝回跳
     Route::get('payment/alipay/return', 'PaymentController@alipayReturn')->name('payment.alipay.return');
+
 });
 
 // 首页

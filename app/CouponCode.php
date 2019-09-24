@@ -34,6 +34,8 @@ class CouponCode extends Model
 
     protected $dates = ['not_before', 'not_after'];
 
+    protected $appends = ['description'];
+
     /**
      * 生成优惠券编码
      *
@@ -48,20 +50,16 @@ class CouponCode extends Model
         return $code;
     }
 
-    public function getDescriptionAttribute($minAmount = '', $type = '', $value = '')
+    public function getDescriptionAttribute()
     {
-        $minAmount = $minAmount ?: $this->min_amount;
-        $type = $type ?: $this->type;
-        $value = $value ?: $this->value;
-
         $str = '';
-        if ($minAmount > 0) {
-            $str = '满' . $minAmount;
+        if ($this->min_amount > 0) {
+            $str = '满' . $this->min_amount;
         }
-        if ($type === self::TYPE_PERCENT) {
-            return $str . '优惠' . $value . '%';
+        if ($this->type === self::TYPE_PERCENT) {
+            return $str . '优惠' . $this->value . '%';
         }
 
-        return $str . '减' . $value;
+        return $str . '减' . $this->value;
     }
 }

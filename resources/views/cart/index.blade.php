@@ -82,6 +82,20 @@
                                     <textarea name="remark" rows="3" class="form-control"></textarea>
                                 </div>
                             </div>
+                            {{-- 优惠券 --}}
+                            <div class="form-group row">
+                                <label class="col-form-label col-sm-3 text-md-right">优惠券</label>
+                                <div class="col-sm-4">
+                                    <input type="text" class="form-control" name="coupon_code">
+                                    <span class="form-text text-muted" id="coupon_desc"></span>
+                                </div>
+                                <div class="col-sm-3">
+                                    <button type="button" class="btn btn-success" id="btn-checked-coupon">检查</button>
+                                    <button type="button" class="btn btn-danger" style="display: none"
+                                            id="btn-cancel-coupon">取消
+                                    </button>
+                                </div>
+                            </div>
                             <div clas="form-group">
                                 <div class="offset-sm-3 col-sm-3">
                                     <button type="button" class="btn btn-primary btn-create-order">提交订单</button>
@@ -167,5 +181,36 @@
                 }
             );
         });
+
+        $('#btn-checked-coupon').on('click', function () {
+            var code = $('input[name=coupon_code]').val();
+            if (!code) {
+                swal('请输入优惠券码', '', 'warning');
+                return
+            }
+
+            axios.post('/coupon_codes/' + encodeURIComponent(code))
+                .then(function (response) {
+                    $('#coupon_desc').text(response.data.description);
+                    $('input[name=coupon_code]').prop('readonly', true);
+                    $('#btn-cancel-coupon').show();
+                    $('#btn-checked-coupon').hide();
+                }, function (error) {
+                    if (error.response.status === 404) {
+                        swal('优惠码不存在', '', 'error')
+                    } else if (error.response.status === 403) {
+                        swal(error.response.data.msg, '', 'error')
+                    } else {
+                        swal('内部错误', '', 'error')
+                    }
+                });
+        });
+        $('#btn-cancel-coupon').on('click', function () {
+            $('#coupon_desc').text('');
+            $('input[name=coupon_code]').prop('readonly', false);
+            $('#btn-cancel-coupon').hide();
+            $('#btn-checked-coupon').show()
+        });
+
     </script>
 @endsection
