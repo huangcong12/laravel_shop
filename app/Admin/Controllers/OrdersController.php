@@ -228,7 +228,6 @@ class OrdersController extends AdminController
      */
     protected function agreeRefund(Order $order)
     {
-        dd($order->total_amount);
         switch ($order->payment_method) {
             case 'alipay':
                 $refundNo = Order::getAvailableRefundNo();
