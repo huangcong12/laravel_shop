@@ -44,7 +44,7 @@ class Category extends Model
      */
     public function parent()
     {
-        $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class);
     }
 
     /**
@@ -52,7 +52,7 @@ class Category extends Model
      */
     public function children()
     {
-        $this->hasMany(Category::class);
+        return $this->hasMany(Category::class);
     }
 
     /**
