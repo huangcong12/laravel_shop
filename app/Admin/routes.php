@@ -60,4 +60,10 @@ Route::group([
      * 优惠券
      */
     $router->resource('coupon_codes', 'CouponCodesController');
+
+    /**
+     * 商品类目
+     */
+    $router->resource('categories', CategoriesController::class);
+    $router->get('api/categories', 'CategoriesController@apiIndex');
 });

@@ -16,19 +16,7 @@ class ProductsController extends AdminController
      *
      * @var string
      */
-    protected $title = 'App\Product';
-
-    /**
-     * 商品列表
-     *
-     * @param Content $content
-     * @return Content
-     */
-    public function index(Content $content)
-    {
-        $this->title = '商品列表';
-        return parent::index($content);
-    }
+    protected $title = '商品列表';
 
     /**
      * 新增商品

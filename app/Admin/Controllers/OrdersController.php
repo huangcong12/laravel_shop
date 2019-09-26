@@ -20,20 +20,8 @@ class OrdersController extends AdminController
      *
      * @var string
      */
-    protected $title = 'App\Order';
+    protected $title = '订单列表页';
 
-    /**
-     * Index interface.
-     *
-     * @param Content $content
-     *
-     * @return Content
-     */
-    public function index(Content $content)
-    {
-        $this->title = '订单列表页';
-        return parent::index($content);
-    }
 
     /**
      * Show interface.
