@@ -11,6 +11,20 @@
                         <div class="form-row">
                             <div class="col-md-9">
                                 <div class="form-row">
+                                    {{-- 面包屑 --}}
+                                    <div class="col-auto category-breadcrumb">
+                                        <a class="all-products" href="{{ route('products.index') }}">全部</a>
+                                        @if($category)
+                                            @foreach($category->ancestors as $ancestors)
+                                                <span class="category">
+                                                    <a href="{{ route('products.index', ['category_id' => $ancestors->id]) }}">{{ $ancestors->name }}</a>
+                                                </span>
+                                                <span>&gt;</span>
+                                            @endforeach
+                                            <span class="category">{{ $category->name }}</span>
+                                            <input type="hidden" name="category_id" value="{{ $category->id }}">
+                                        @endif
+                                    </div>
                                     <div class="col-auto"><input type="text" class="form-control form-control-sm"
                                                                  placeholder="搜索" name="search"></div>
                                     <div class="col-auto">
@@ -30,6 +44,20 @@
                             </div>
                         </div>
                     </form>
+
+                    {{-- 展示子类目 --}}
+                    <div class="filters">
+                        @if($category && $category->is_directory)
+                            <div class="row">
+                                <div class="col-3 filter-key">子类目：</div>
+                                <div class="col-9 filter-value">
+                                    @foreach($category->children as $child)
+                                        <a href="{{ route('products.index', ['category_id' => $child->id]) }}">{{ $child->name }}</a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                    </div>
 
                     <div class="row products-list">
                         @foreach($products as $product)

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Category;
 use App\Exceptions\InternalException;
 use App\OrderItem;
 use App\Product;
@@ -31,6 +32,19 @@ class ProductsController extends Controller
             });
         }
 
+        // 如果有传入 category_id 字段，并且在数据库中有对应的类目
+        if ($request->input('category_id') && $category = Category::find($request->input('category_id'))) {
+            // 如果这是一个父类目，查出该父类地下的所有子类
+            if ($category->is_directory) {
+                $builder->whereHas('category', function ($query) use ($category) {
+                    $query->where('path', 'like', $category->path . $category->id . '-%');
+                });
+            } else {
+                // 如果不是一个父类，直接筛选此类目下的商品
+                $builder->where('category_id', $category->id);
+            }
+        }
+
         $order = $request->get('order', '');
         if ($order && preg_match('/^(.+)_(asc|desc)$/', $order, $m)) {
             if (in_array($m[1], ['price', 'sold_count', 'rating'])) {
@@ -45,7 +59,8 @@ class ProductsController extends Controller
             'filters' => [
                 'search' => $search,
                 'order' => $order
-            ]
+            ],
+            'category' => $category ?? null,
         ]);
     }
 
