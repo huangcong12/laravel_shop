@@ -2,6 +2,7 @@
 
 /** @var Factory $factory */
 
+use App\Category;
 use App\Product;
 use Faker\Generator as Faker;
 use Illuminate\Database\Eloquent\Factory;
@@ -18,6 +19,9 @@ $factory->define(Product::class, function (Faker $faker) {
         'https://public-10006067.file.myqcloud.com//upload/imagelist/thumb/d04e297d63c78fa009234f725230e951.jpeg',
         'https://public-10006067.file.myqcloud.com//upload/imagelist/thumb/ba5aa668c728e6e43c09968e8a07faf8.jpeg'
     ]);
+
+    $category = Category::query()->where('is_directory', false)->inRandomOrder()->first();
+
     return [
         'title' => $faker->word,
         'description' => $faker->sentence,
@@ -27,5 +31,6 @@ $factory->define(Product::class, function (Faker $faker) {
         'sold_count' => $faker->randomNumber(3),
         'review_count' => $faker->randomNumber(3),
         'price' => 0,
+        'category_id' => $category ? $category->id : null
     ];
 });

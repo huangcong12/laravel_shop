@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Category;
 use App\Product;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
@@ -44,7 +45,6 @@ class ProductsController extends AdminController
     }
 
 
-
     /**
      * Make a grid builder.
      *
@@ -53,10 +53,15 @@ class ProductsController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Product);
-        $grid->column('id', __('Id'))->sortable();
-        $grid->column('title', __('admin.title'));
+        // 使用 with 来预加载商品类目数据，减少 SQL 查询
+        $grid->model()->orderBy('id', 'desc');
+        $grid->model()->with(['category']);
+
+        $grid->column('id', 'ID')->sortable();
+        $grid->column('title', '商品名称');
+        $grid->column('category.name', '类目');
         $grid->column('description', __('admin.description'));
-        $grid->column('image', __('admin.image'));
+        $grid->column('image', __('admin.image'))->image();
         $grid->column('on_sale', __('admin.on_sale'));
         $grid->column('rating', __('admin.rating'));
         $grid->column('sold_count', __('admin.sold_count'));
@@ -103,6 +108,13 @@ class ProductsController extends AdminController
         $form = new Form(new Product);
 
         $form->text('title', __('admin.title'))->rules('required');
+        // 添加一个类目，使用 Ajax 的方式来搜索添加
+        $form->select('category_id', '类目')->options(function ($id) {
+            $category = Category::find($id);
+            if ($category) {
+                return [$category->id => $category->full_name];
+            }
+        })->ajax('/admin/api/categories?is_directory=false');
         $form->image('image', __('admin.image'))->rules('required');
         $form->textarea('description', __('admin.description'))->rules('required');
         $form->switch('on_sale', __('admin.on_sale'))

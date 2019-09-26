@@ -73,7 +73,7 @@ class CategoriesController extends AdminController
     {
         $search = $request->input('q');
         $result = Category::query()
-            ->where('is_directory', true)
+            ->where('is_directory', boolval($request->get('is_directory', true)))
             ->where('name', 'like', '%' . $search . '%')
             ->paginate();
 
@@ -95,14 +95,10 @@ class CategoriesController extends AdminController
 
         $grid->column('id', 'ID')->sortable();
         $grid->column('name', '名称');
-//        $grid->column('parent_id', __('Parent id'));
         $grid->column('is_directory', '是否目录')->display(function ($value) {
             return $value ? '是' : '否';
         });
-//        $grid->column('level', __('Level'));
         $grid->column('path', '类目路径');
-//        $grid->column('created_at', __('Created at'));
-//        $grid->column('updated_at', __('Updated at'));
 
         $grid->actions(function ($actions) {
             $actions->disableView();
