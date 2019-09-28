@@ -13,7 +13,15 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
-
+                @if(isset($categoryTree))
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                           aria-expanded="false" id="categoryTree">所有类目 <b class="carent"></b></a>
+                        <ul class="dropdown-menu" aria-labelledby="categoryTree">
+                            @each('layouts._category_item', $categoryTree, 'category')
+                        </ul>
+                    </li>
+                @endif
             </ul>
 
             <ul class="navbar-nav navbar-right">

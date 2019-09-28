@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Http\ViewComposers\CategoryTreeComposer;
 use Illuminate\Support\ServiceProvider;
 use Monolog\Logger;
+use View;
 use Yansongda\Pay\Pay;
 
 class AppServiceProvider extends ServiceProvider
@@ -46,6 +48,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        View::composer(['products.index', 'products.show'],
+            CategoryTreeComposer::class);
     }
 }

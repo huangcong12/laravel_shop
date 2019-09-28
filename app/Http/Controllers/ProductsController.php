@@ -6,6 +6,7 @@ use App\Category;
 use App\Exceptions\InternalException;
 use App\OrderItem;
 use App\Product;
+use App\Services\CategoryService;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
