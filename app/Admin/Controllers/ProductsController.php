@@ -55,7 +55,7 @@ class ProductsController extends AdminController
         $grid = new Grid(new Product);
         // 使用 with 来预加载商品类目数据，减少 SQL 查询
         $grid->model()->orderBy('id', 'desc');
-        $grid->model()->with(['category']);
+        $grid->model()->where('type', Product::TYPE_CROWDFUNDING)->with(['category']);
 
         $grid->column('id', 'ID')->sortable();
         $grid->column('title', '商品名称');
@@ -107,6 +107,7 @@ class ProductsController extends AdminController
     {
         $form = new Form(new Product);
 
+        $form->hidden('type')->value(Product::TYPE_NORMAL);
         $form->text('title', __('admin.title'))->rules('required');
         // 添加一个类目，使用 Ajax 的方式来搜索添加
         $form->select('category_id', '类目')->options(function ($id) {
@@ -122,7 +123,6 @@ class ProductsController extends AdminController
         $form->decimal('rating', __('admin.rating'))->default(5.00);
         $form->number('sold_count', __('admin.sold_count'))->min(0);
         $form->number('review_count', __('admin.review_count'))->min(0);
-//        $form->decimal('price', __('admin.price'))->rules('required');
 
         // 直接添加一对多模型
         $form->hasMany('skus', 'SKU 列表', function (Form\NestedForm $form) {

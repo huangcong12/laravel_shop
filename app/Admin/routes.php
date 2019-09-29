@@ -66,4 +66,10 @@ Route::group([
      */
     $router->resource('categories', CategoriesController::class);
     $router->get('api/categories', 'CategoriesController@apiIndex');
+
+    /**
+     * 众筹商品
+     */
+    $router->resource('crowdfunding_products', CrowdfundingProductsController::class);
+
 });
