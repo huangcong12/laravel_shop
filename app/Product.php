@@ -2,13 +2,9 @@
 
 namespace App;
 
-use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -17,9 +13,12 @@ use Illuminate\Support\Facades\Storage;
  */
 class Product extends Model
 {
-    // 商品类型
+    /**
+     * 商品类型
+     */
     const TYPE_NORMAL = 'normal';
     const TYPE_CROWDFUNDING = 'crowdfunding';
+
     public static $typeMap = [
         self::TYPE_NORMAL => '普通商品',
         self::TYPE_CROWDFUNDING => '众筹商品',
