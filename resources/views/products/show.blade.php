@@ -24,9 +24,9 @@
                                     <div class="progress">
                                         <div class="progress-bar progress-bar-success progress-bar-striped"
                                              role="progressbar"
-                                             aria-valuenow="{{ $product->crowdfunding->percent }}"
+                                             aria-valuenow={{ $product->crowdfunding->percent }}
                                              aria-valuemin="0" aria-valuemax="100"
-                                             style="min-width:1em;width:{{ min($product->crowdfunding->precent, 100) }}%">
+                                             style="min-width:1em;width:{{ min($product->crowdfunding->percent, 100) }}%">
                                         </div>
                                     </div>
                                     <div class="progress-info">
