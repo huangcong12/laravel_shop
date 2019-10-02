@@ -12,6 +12,45 @@
                         </div>
                         <div class="col-7">
                             <div class="title">{{ $product->title }}</div>
+                            @if($product->type === \App\Product::TYPE_CROWDFUNDING)
+                                {{-- 众筹商品 --}}
+                                <div class="crowdfunding-info">
+                                    <div class="have-text">已筹到</div>
+                                    <div class="total-amount">
+                                        <span class="symbol">￥</span>
+                                        {{ $product->crowdfunding->total_amount }}
+                                    </div>
+                                    {{-- 这里使用 bootstrap 的进度条 --}}
+                                    <div class="progress">
+                                        <div class="progress-bar progress-bar-success progress-bar-striped"
+                                             role="progressbar"
+                                             aria-valuenow="{{ $product->crowdfunding->percent }}"
+                                             aria-valuemin="0" aria-valuemax="100"
+                                             style="min-width:1em;width:{{ min($product->crowdfunding->precent, 100) }}%">
+                                        </div>
+                                    </div>
+                                    <div class="progress-info">
+                                        <span
+                                            class="current-progress">当前进度：{{ $product->crowdfunding->percent }}%</span>
+                                        <span
+                                            class="float-right user-count">{{ $product->crowdfunding->user_count }}名支持者</span>
+                                    </div>
+                                    {{-- 如果状态是众筹中，输出提示语--}}
+                                    @if($product->crowdfunding->status === \App\CrowdfundingProduct::STATUS_FUNDING)
+                                        <div>此项目必须在
+                                            <span
+                                                class="text-red">{{ $product->crowdfunding->end_at->format('Y-m-d H:i:s') }}</span>
+                                            前得到
+                                            <span class="text-red">￥{{ $product->crowdfunding->target_amount }}</span>
+                                            的支持才可成功，筹款将在
+                                            <span
+                                                class="text-red">{{ $product->crowdfunding->end_at->diffForHumans(now()) }}</span>
+                                            结束！
+                                        </div>
+                                    @endif
+                                </div>
+                            @else
+                                {{-- 普通商品 --}}
                             <div class="price"><label>价格</label><em>￥</em><span>{{ $product->price }}</span></div>
                             <div class="sales_and_reviews">
                                 <div class="sales_count">累计销量 <span class="count">{{ $product->sald_count }}</span>
@@ -22,6 +61,7 @@
                                         class="count">{{ str_repeat('★', floor($product->rating)) }}{{ floor($product->rating)==5?"":str_repeat('☆', 5-floor($product->rating)) }}</span>
                                 </div>
                             </div>
+                            @endif
 
                             <div class="skus">
                                 <label>选择</label>
@@ -52,6 +92,22 @@
                                 <button class="btn btn-success btn-favor">❤收藏</button>
                                 @endif
                                 <button class="btn btn-primary btn-add-to-cart">加入购物车</button>
+                                {{-- 众筹商品 --}}
+                                @if($product->type == \App\Product::TYPE_CROWDFUNDING)
+                                    @if(Auth::check())
+                                        @if($product->crowdfunding->status === \App\CrowdfundingProduct::STATUS_FUNDING)
+                                            <button class="btn btn-primary btn-crowdfunding">参与众筹</button>
+                                        @else
+                                            <button class="btn btn-primary disabled">
+                                                {{ \App\CrowdfundingProduct::$statusMap[$product->crowdfunding->status] }}
+                                            </button>
+                                        @endif
+                                    @else
+                                        <a href="{{ route('login') }}" class="btn btn-primary">请先登录</a>
+                                    @endif
+                                @else
+                                    <a href="btn btn-primary btn-add-to-cart">加入购物车</a>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -165,6 +221,75 @@
                     swal('系统异常', '', 'error')
                 }
             });
+        });
+
+        /* 参与众筹 */
+        $('.btn-crowdfunding').on('click', function () {
+            // 判断是否选中 SKU
+            if (!$('label.active input[name=sku]').val()) {
+                swal('请选择商品');
+                return
+            }
+
+            var address =;
+                {!! json_encode(Auth::user()->address) !!}
+            var $form = $('<form></form>');
+            $form.append('<div class="form-group row">' +
+                '<label class="col-form-label col-sm-3">选择地址</label>' +
+                '<div class="col-sm-9">' +
+                '<select class="custom-select" name="address_id"></select>' +
+                '</div></div>');
+            // 循环每个收货地址
+            address.forEach(function (address) {
+                $form.find('select[name=address_id]').append('<option value="' + address.id + '">' +
+                    address.full_address + '' + address.contact_name + '' + address.contact_phone +
+                    '</option>')
+            });
+
+            // 在表单中添加一个名为 购买数量 的输入框
+            $form.append('<div class="form-group row">' +
+                '<label class="col-form-label col-sm-3">够买数量</label>' +
+                '<div class="col-sm-9"><input type="text" class="form-control" name="amount">' +
+                '</div></div>');
+            // 调用 SweetAlert 弹框
+            swal({
+                text: '参与众筹',
+                content: $form[0],
+                buttons: ['取消', '确定']
+            }).then(function (ret) {
+                if (!ret) {
+                    return
+                }
+                // 构建请求参数
+                var req = {
+                    address_id: $form.find('select[name=address_id]').val(),
+                    amount: $form.find('input[name=amount]').val(),
+                    sku_id: $('label.active input[name=sku]').val()
+                };
+                // 调用众筹商品下单接口
+                axios.post('{{ route('crowdfunding_orders.store') }}', req)
+                    .then(function (response) {
+                        // 订单创建成功，跳转到订单详情页
+                        swal('订单提交成功', '', 'success').then(() => {
+                            location.href = '/orders/' + response.data.id
+                        });
+                    }, function (error) {
+                        if (error.response.status === 422) {
+                            var html = '<div>';
+                            _.each(error.response.data.errors, function (errors) {
+                                _.each(errors, function (error) {
+                                    html += error + '<br>'
+                                })
+                            });
+                            html += '</div>';
+                            swal({content: $(html)[0], icon: 'error'})
+                        } else if (error.response.status === 403) {
+                            swal(error.response.data.msg, '', 'error')
+                        } else {
+                            swal('系统错误', '', 'error')
+                        }
+                    })
+            })
         });
     </script>
 @endsection

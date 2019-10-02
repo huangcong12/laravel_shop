@@ -67,6 +67,8 @@ Route::group(['middleware' => ['auth']], function () {
     // 支付宝回跳
     Route::get('payment/alipay/return', 'PaymentController@alipayReturn')->name('payment.alipay.return');
 
+    // 众筹商品
+    Route::post('crowdfunding_orders', 'OrdersController@crowdfunding')->name('crowdfunding_orders.store');
 });
 
 // 首页
