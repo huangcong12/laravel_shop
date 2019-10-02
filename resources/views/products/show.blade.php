@@ -91,7 +91,7 @@
                                 @else
                                 <button class="btn btn-success btn-favor">❤收藏</button>
                                 @endif
-                                <button class="btn btn-primary btn-add-to-cart">加入购物车</button>
+
                                 {{-- 众筹商品 --}}
                                 @if($product->type == \App\Product::TYPE_CROWDFUNDING)
                                     @if(Auth::check())
@@ -106,7 +106,7 @@
                                         <a href="{{ route('login') }}" class="btn btn-primary">请先登录</a>
                                     @endif
                                 @else
-                                    <a href="btn btn-primary btn-add-to-cart">加入购物车</a>
+                                        <button class="btn btn-primary btn-add-to-cart">加入购物车</button>
                                 @endif
                             </div>
                         </div>
@@ -230,9 +230,8 @@
                 swal('请选择商品');
                 return
             }
-
-            var address =;
-                {!! Auth::check() ? json_encode(Auth::user()->address) : [] !!}
+            var address = null;
+                {!! json_encode(Auth::check() ? Auth::user()->address : []) !!}
             var $form = $('<form></form>');
             $form.append('<div class="form-group row">' +
                 '<label class="col-form-label col-sm-3">选择地址</label>' +
