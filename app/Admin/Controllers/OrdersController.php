@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\CrowdfundingProduct;
 use App\Exceptions\InternalException;
 use App\Exceptions\InvalidRequestException;
 use App\Http\Requests\Admin\HandleRefundRequest;
@@ -161,6 +162,9 @@ class OrdersController extends AdminController
             throw new InvalidRequestException('该订单未付款');
         } elseif ($order->ship_status != Order::SHIP_STATUS_PENDING) {
             throw new InvalidRequestException('该订单已发货');
+        } elseif ($order->type == Order::TYPE_CROWDFUNDING
+            && $order->items[0]->product->crowdfunding->status != CrowdfundingProduct::STATUS_SUCCESS) {
+            throw new InvalidRequestException('众筹订单只能在众筹成功后发货');
         }
 
         $data = $request->validate([
