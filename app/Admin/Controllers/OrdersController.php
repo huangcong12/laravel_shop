@@ -3,10 +3,10 @@
 namespace App\Admin\Controllers;
 
 use App\CrowdfundingProduct;
-use App\Exceptions\InternalException;
 use App\Exceptions\InvalidRequestException;
 use App\Http\Requests\Admin\HandleRefundRequest;
 use App\Order;
+use App\Services\OrderService;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -192,7 +192,7 @@ class OrdersController extends AdminController
      * @param Order $order
      * @param HandleRefundRequest $request
      */
-    public function handleRefund(Order $order, HandleRefundRequest $request)
+    public function handleRefund(Order $order, HandleRefundRequest $request, OrderService $orderService)
     {
         if ($order->refund_status !== Order::REFUND_STATUS_APPLIED) {
             throw new InvalidRequestException('订单状态不正确');
@@ -200,7 +200,7 @@ class OrdersController extends AdminController
 
         if ($request->input('agree')) {
             // 同意退款
-            $this->agreeRefund($order);
+            $orderService->refundOrder($order);
         } else {
             $extra = $order->extra ? $order->extra : [];
             $extra['refund_disagree_reason'] = $request->input('reason');
@@ -211,40 +211,5 @@ class OrdersController extends AdminController
             ]);
         }
         return $order;
-    }
-
-    /**
-     * 同意退款
-     *
-     * @param Order $order
-     */
-    protected function agreeRefund(Order $order)
-    {
-        switch ($order->payment_method) {
-            case 'alipay':
-                $refundNo = Order::getAvailableRefundNo();
-                $ret = app('alipay')->refund([
-                    'out_trade_no' => $order->no,                // 订单流水号
-                    'refund_amount' => $order->total_amount,    // 退款金额
-                    'out_request_no' => $refundNo,              // 退款单号
-                ]);
-
-                if ($ret->sub_code) {
-                    $extra = $order->extra;
-                    $extra['refund_faild_code'] = $ret->sub_code;
-                    $order->update([
-                        'refund_no' => $refundNo,
-                        'refund_status' => Order::REFUND_STATUS_FAILED
-                    ]);
-                } else {
-                    $order->update([
-                        'refund_no' => $refundNo,
-                        'refund_status' => Order::REFUND_STATUS_SUCCESS,
-                    ]);
-                }
-                break;
-            default:
-                throw new InternalException('未知订单支付方式：' . $order->payment_method);
-        }
     }
 }
