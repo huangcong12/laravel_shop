@@ -112,7 +112,7 @@ class OrderService
             // 创建一个订单
             $order = new Order([
                 'address' => [
-                    'address' => $address->full_address,
+                    'addresses' => $address->full_address,
                     'zip' => $address->zip,
                     'contact_name' => $address->contact_name,
                     'contact_phone' => $address->contact_phone,
