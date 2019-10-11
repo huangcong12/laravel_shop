@@ -230,8 +230,7 @@
                 swal('请选择商品');
                 return
             }
-            var address =;
-                {!! json_encode(Auth::check() ? Auth::user()->address : []) !!}
+            var address ={!! json_encode(Auth::check() ? Auth::user()->address : []) !!}
             var $form = $('<form></form>');
             $form.append('<div class="form-group row">' +
                 '<label class="col-form-label col-sm-3">选择地址</label>' +

@@ -179,6 +179,8 @@ return [
 
         // PHPStrom helper
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
+        // LaravelS
+        Hhxsv5\LaravelS\Illuminate\LaravelSServiceProvider::class,
 
     ],
 
@@ -236,6 +238,23 @@ return [
     /**
      * 订单过期时间
      */
-    'order_ttl' => 3600
+    'order_ttl' => 3600,
+
+    /**
+     * 分期费率，key 为期数，value 为费率
+     */
+    'installment_fee_rate' => [
+        3 => 1.5,
+        6 => 2,
+        12 => 2.5,
+    ],
+    /**
+     * 分期最低金额
+     */
+    'min_installment_amount' => 300,
+    /**
+     * 逾期日利息
+     */
+    'installment_fine_rate' => 0.05,
 
 ];

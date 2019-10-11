@@ -117,6 +117,10 @@
                                     <div class="payment-buttons">
                                         <a href="{{ route('payment.alipay', ['order'=>$order->id]) }}"
                                            class="btn btn-primary btn-sm">支付宝支付</a>
+                                        {{-- 分期支付开始 --}}
+                                        @if($order->total_amount >= config('app.min_installment_amount'))
+                                            <button class="btn btn-sm btn-danger" id="btn-installment">分期付款</button>
+                                        @endif
                                     </div>
                                 @endif
 
@@ -133,6 +137,45 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- 分期弹框 --}}
+    <div class="modal fade" id="installment-model">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">选择分期期数</h5>
+                    <button type="button" class="close" data-dismiss="model" aria-label="Close"><span>x</span></button>
+                </div>
+                <div class="modal-body">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th class="text-center">期数</th>
+                            <th class="text-center">费率</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach(config('app.installment_fee_rate') as $count => $rate)
+                            <tr>
+                                <td>{{ $count }} 期</td>
+                                <td>{{ $rate }} %</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary btn-select-installment"
+                                            data-count="{{ $count }}">选择
+                                    </button>
+                                </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="model-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                 </div>
             </div>
         </div>

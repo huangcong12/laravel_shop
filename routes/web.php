@@ -69,6 +69,9 @@ Route::group(['middleware' => ['auth']], function () {
 
     // 众筹商品
     Route::post('crowdfunding_orders', 'OrdersController@crowdfunding')->name('crowdfunding_orders.store');
+
+    // 分期商品下单
+    Route::post('payment/{order}/installment', 'PaymentController@payByInstallment')->name('payment.installment');
 });
 
 // 首页
