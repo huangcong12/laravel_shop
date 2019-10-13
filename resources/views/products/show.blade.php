@@ -177,7 +177,9 @@
         $('.btn-favor').on('click', function () {
             axios.post('{{ route('products.favor', ['product'=> $product->id]) }}')
                 .then(function () {
-                    swal('操作成功', '', 'success')
+                    swal('收藏成功', '', 'success').then(function () {
+                        location.reload()
+                    });
                 }, function (error) {
                     if (error.response && error.response.status === 401) {
                         swal('请先登录', '', 'error').then(function () {
@@ -195,7 +197,7 @@
         $('.btn-disfavor').on('click', function () {
             axios.delete('{{ route("products.disfavor", ['product' => $product->id]) }}')
                 .then(function () {
-                    swal('操作成功', '', 'success').then(function () {
+                    swal('取消收藏成功', '', 'success').then(function () {
                         location.reload()
                     });
                 });
@@ -230,7 +232,8 @@
                 swal('请选择商品');
                 return
             }
-            var address ={!! json_encode(Auth::check() ? Auth::user()->address : []) !!}
+            var address =;
+                {!! json_encode(Auth::check() ? Auth::user()->address : []) !!}
             var $form = $('<form></form>');
             $form.append('<div class="form-group row">' +
                 '<label class="col-form-label col-sm-3">选择地址</label>' +
