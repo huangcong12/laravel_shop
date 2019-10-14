@@ -78,9 +78,9 @@ Route::group(['middleware' => ['auth']], function () {
     // 分期付款详情页
     Route::get('/installments/{installment}', 'InstallmentsController@show')->name('installments.show');
     // 支付宝支付
-    Route::get('/installment/{installment}/alipay', 'InstallmentsController@payByAlipay')->name('installments.alipay');
+    Route::get('/installments/{installment}/alipay', 'InstallmentsController@payByAlipay')->name('installments.alipay');
     // 支付宝支付回跳
-    Route::get('/installment/alipay/return', 'InstallmentsController@alipayReturn')->name('installments.alipay.return');
+    Route::get('/installments/alipay/return', 'InstallmentsController@alipayReturn')->name('installments.alipay.return');
 
 });
 
