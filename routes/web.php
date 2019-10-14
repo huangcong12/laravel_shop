@@ -73,8 +73,10 @@ Route::group(['middleware' => ['auth']], function () {
     // 分期商品下单
     Route::post('payment/{order}/installment', 'PaymentController@payByInstallment')->name('payment.installment');
 
-    // 分期付款页面
+    // 分期付款列表页
     Route::get('/installments', 'InstallmentsController@index')->name('installments.index');
+    // 分期付款详情页
+    Route::get('/installments/{installment}', 'InstallmentsController@show')->name('installments.show');
 });
 
 // 首页
