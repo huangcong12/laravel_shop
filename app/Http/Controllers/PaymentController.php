@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Yansongda\Supports\Log;
 
 class PaymentController extends Controller
@@ -105,7 +106,7 @@ class PaymentController extends Controller
      */
     public function payByInstallment(Order $order, Request $request)
     {
-        $this->authorize('own', $request->user());
+        $this->authorize('own', $order);
 
         if ($order->paid_at || $order->closed) {
             throw new InvalidRequestException('订单状态不正确');
@@ -118,7 +119,7 @@ class PaymentController extends Controller
 
         // 校验用户提交的还款月数，数值必须是我们配置好费率的期数
         $this->validate($request, [
-            'count' => ['required', Rule::in(array_keys(config('app.installment_fine_rate')))]
+            'count' => ['required', Rule::in(array_keys(config('app.installment_fee_rate')))]
         ]);
 
         // 删除同一笔商品订单发起过的其他状态是未支付的分期付款，避免同一笔商品订单有多个分期付款

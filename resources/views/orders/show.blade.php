@@ -151,7 +151,7 @@
                     <button type="button" class="close" data-dismiss="model" aria-label="Close"><span>x</span></button>
                 </div>
                 <div class="modal-body">
-                    <table>
+                    <table class="table table-bordered table-striped text-center">
                         <thead>
                         <tr>
                             <th class="text-center">期数</th>
@@ -174,7 +174,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="model-footer">
+                <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                 </div>
             </div>
@@ -218,5 +218,19 @@
                     })
             })
         })
+
+        $('#btn-installment').on('click', function () {
+            // 展示分期付款弹框
+            $('#installment-model').modal()
+        });
+
+        // 选择分期期数按钮
+        $('.btn-select-installment').on('click', function () {
+            axios.post('{{ route("payment.installment", ["order" => $order->id]) }}', {
+                count: $(this).data('count')
+            }).then(function (response) {
+                console.log(response.data)
+            });
+        });
     </script>
 @endsection
